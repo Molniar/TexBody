@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TexBody^^ — с новыми фичами</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f0f1a;
+            color: #e0e0e0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        body.light {
+            background: #f0f4f8;
+            color: #1a1a2e;
+        }
+        h1 {
+            color: #00fff2;
+            text-shadow: 2px 2px 0 #0055aa;
+            margin-bottom: 5px;
+        }
+        body.light h1 {
+            color: #0066cc;
+            text-shadow: 1px 1px 0 #88ddff;
+        }
+        .subtitle {
+            color: #88ddff;
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .subtitle span {
+            background: #1a2a3a;
+            padding: 2px 12px;
+            border-radius: 20px;
+            border: 1px solid #2a6a8a;
+            font-size: 0.85rem;
+        }
+        body.light .subtitle span {
+            background: #ddeeff;
+            border-color: #88bbdd;
+            color: #003366;
+        }
+        .badge {
+            background: #4caf50;
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        .badge.new {
+            background: #ff9800;
+        }
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin: 10px 0 15px;
+            padding: 8px 16px;
+            background: #1a1a2e;
+            border-radius: 40px;
+            border: 1px solid #2a4a6a;
+            max-width: 1000px;
+            width: 100%;
+        }
+        body.light .toolbar {
+            background: #e8f0f8;
+            border-color: #aaccee;
+        }
+        .toolbar button {
+            background: #2a3a5a;
+            border: none;
+            color: #cceeff;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .toolbar button:hover {
+            background: #3a5a7a;
+            transform: translateY(-2px);
+        }
+        .toolbar button.danger { background: #7a2a2a; }
+        .toolbar button.danger:hover { background: #9a3a3a; }
+        .toolbar button.success { background: #1a6a3a; }
+        .toolbar button.success:hover { background: #2a8a4a; }
+        body.light .toolbar button {
+            background: #d0e4f0;
+            color: #003366;
+        }
+        body.light .toolbar button:hover { background: #b8d0e0; }
+        body.light .toolbar button.danger {
+            background: #f0b0b0;
+            color: #660000;
+        }
+        body.light .toolbar button.danger:hover { background: #e09090; }
+        body.light .toolbar button.success {
+            background: #90d0a0;
+        }
+        body.light .toolbar button.success:hover { background: #70b880; }
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .box {
+            flex: 1 1 45%;
+            min-width: 300px;
+            background: #1a1a2e;
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid #2a4a6a;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+        body.light .box {
+            background: #ffffff;
+            border-color: #b0c8dd;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .box label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #88ddff;
+        }
+        body.light .box label { color: #0066aa; }
+        #code-editor {
+            width: 100%;
+            min-height: 400px;
+            background: #0f0f1a;
+            color: #d0d0e0;
+            border: 1px solid #2a4a6a;
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            tab-size: 4;
+        }
+        body.light #code-editor {
+            background: #f8faff;
+            color: #1a1a2e;
+            border-color: #b0c8dd;
+        }
+        #code-editor:focus { outline: none; border-color: #4a8aba; }
+        #output {
+            background: #0f0f1a;
+            color: #cdebf4;
+            border: 1px solid #2a4a6a;
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 400px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            flex: 1;
+        }
+        body.light #output {
+            background: #f8faff;
+            color: #1a1a2e;
+            border-color: #b0c8dd;
+        }
+        #debug {
+            background: #1a1a2e;
+            color: #89b4fa;
+            border: 1px solid #2a4a6a;
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 120px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 1400px;
+        }
+        body.light #debug {
+            background: #eef4f8;
+            color: #003366;
+            border-color: #88bbdd;
+        }
+        .debug-line { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .debug-line.error { color: #ff8a8a; }
+        .debug-line.success { color: #8aff8a; }
+        .debug-line.warning { color: #ffcc66; }
+        .debug-line.info { color: #89b4fa; }
+        body.light .debug-line { border-bottom-color: rgba(0,0,0,0.05); }
+        .status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #88aacc;
+            text-align: center;
+        }
+        body.light .status { color: #336688; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1a2e; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #2a4a6a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3a5a7a; }
+        body.light ::-webkit-scrollbar-track { background: #e8f0f8; }
+        body.light ::-webkit-scrollbar-thumb { background: #aaccee; }
+        body.light ::-webkit-scrollbar-thumb:hover { background: #88bbdd; }
+        .examples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 5px 0;
+        }
+        .examples button {
+            background: #2a3a5a;
+            border: none;
+            color: #cceeff;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .examples button:hover {
+            background: #3a5a7a;
+            transform: scale(1.05);
+        }
+        body.light .examples button {
+            background: #d0e4f0;
+            color: #003366;
+        }
+        body.light .examples button:hover { background: #b8d0e0; }
+        .features-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 5px;
+        }
+        .features-list .tag {
+            background: #1a3a2a;
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            border: 1px solid #2a6a4a;
+            color: #8aff8a;
+        }
+        body.light .features-list .tag {
+            background: #e0f0e0;
+            border-color: #8abb8a;
+            color: #006600;
+        }
+        .features-list .tag.new {
+            border-color: #ff9800;
+            color: #ffcc66;
+            background: #3a2a1a;
+        }
+        body.light .features-list .tag.new {
+            background: #fff0e0;
+            border-color: #ff9800;
+            color: #996600;
+        }
+    </style>
+</head>
+<body>
+    <h1>TexBody^^ — новая версия</h1>
+    <div class="subtitle">
+        <span>Tex>вывод<</span>
+        <span>_>ввод<</span>
+        <span>!константа</span>
+        <span>^^ ..</span>
+        <span>Pack&lt;&gt;</span>
+        <span class="badge new">🆕 \> \>></span>
+        <span class="badge new">🆕 Tex>>...<<</span>
+        <span class="badge new">🆕 \...\</span>
+        <span class="badge new">🆕 yes/no</span>
+    </div>
+    <div class="features-list">
+        <span class="tag">✅ Tex>вывод<</span>
+        <span class="tag">✅ переменная = значение</span>
+        <span class="tag">✅ @переменная</span>
+        <span class="tag">✅ ? !? !</span>
+        <span class="tag">✅ ?? цикл</span>
+        <span class="tag new">🆕 \> перенос</span>
+        <span class="tag new">🆕 \>> табуляция</span>
+        <span class="tag new">🆕 Tex>>многострочный<<</span>
+        <span class="tag new">🆕 \комментарий\</span>
+        <span class="tag new">🆕 yes/no</span>
+    </div>
+
+    <div class="toolbar">
+        <button class="success" id="runBtn">▶ Запустить</button>
+        <button class="danger" id="clearBtn">🗑️ Очистить всё</button>
+        <button id="saveBtn">💾 Сохранить .tb^^</button>
+        <button id="loadBtn">📂 Загрузить .tb^^</button>
+        <button id="themeBtn">🌓 Тема</button>
+        <button id="examplesBtn">📋 Примеры</button>
+    </div>
+
+    <div class="container">
+        <div class="box">
+            <label>
+                📝 Код
+                <div class="examples" id="examplesContainer" style="display:none;">
+                    <button data-example="1">Базовый</button>
+                    <button data-example="2">Новые фичи</button>
+                    <button data-example="3">Многострочный</button>
+                </div>
+            </label>
+            <textarea id="code-editor" spellcheck="false">// 🌟 Тест новых фич TexBody^^
+
+// 1. yes / no (true/false)
+flag = yes
+Tex>flag = @flag
+
+// 2. Экранирование \> (перенос) и \>> (табуляция)
+Tex>Строка1\>Строка2\>>С табуляцией<
+
+// 3. Многострочный вывод Tex>>...<<
+Tex>>Это многострочный
+вывод с переносами
+и \> ещё один перенос
+и \>> табуляция<<
+
+// 4. Многострочный комментарий \...\
+\это многострочный
+комментарий
+который игнорируется\
+
+// 5. Обычные фичи
+name = "Алексей"
+age = 30
+Tex>Привет, @name! Тебе @age лет.
+
+// 6. Условия с yes/no
+? (flag == yes) {
+    Tex>✅ flag = yes (истина)
+} ! {
+    Tex>flag = no (ложь)
+}
+
+// 7. Цикл
+i = 1
+?? (i <= 3) {
+    Tex>i = @i
+    i^^
+}
+
+Tex>=== Готово! ===</textarea>
+        </div>
+        <div class="box">
+            <label>📤 Вывод</label>
+            <div id="output">=== TexBody^^ Console ===
+Готов к работе. Нажми "Запустить".</div>
+        </div>
+    </div>
+
+    <div id="debug">🔍 Отладка: готов к работе</div>
+    <div class="status" id="status">✅ Новая версия с \>, Tex>>, \...\, yes/no</div>
+
+    <script>
+        // ========================================
+        // КЛАСС PACK
+        // ========================================
+        class Pack {
+            constructor(items = []) { this.items = items; }
+            add(item) { this.items.push(item); return this; }
+            removeFirst() { return this.items.length > 0 ? this.items.shift() : null; }
+            removeAt(index) {
+                if (index < 1) index = 1;
+                if (index > this.items.length) return null;
+                return this.items.splice(index - 1, 1)[0] || null;
+            }
+            get(index) {
+                if (index < 1) index = 1;
+                if (index > this.items.length) return undefined;
+                return this.items[index - 1];
+            }
+            get length() { return this.items.length; }
+            toString() { return `Pack<${this.items.join(', ')}>`; }
+        }
+
+        // ========================================
+        // ИНТЕРПРЕТАТОР С НОВЫМИ ФИЧАМИ
+        // ========================================
+        class SimpleTexInterpreter {
+            constructor() {
+                this.variables = {};
+                this.constants = {};
+                this.functions = {};
+                this.output = [];
+                this.debug = [];
+                this.isPaused = false;
+                this.lines = [];
+                this.maxIterations = 1000;
+                this.inMultilineComment = false;
+                this.promptText = '';
+            }
+
+            run(code) {
+                this.reset();
+                // Разбиваем на строки
+                this.lines = code.split('\n')
+                    .map((text, i) => ({ number: i + 1, text, trimmed: text.trim() }))
+                    .filter(line => line.trimmed !== '' || line.text.includes('{') || line.text.includes('}'));
+
+                try {
+                    this.parseProgram();
+                    return {
+                        success: true,
+                        output: this.output.join('\n'),
+                        debug: this.debug
+                    };
+                } catch (e) {
+                    return {
+                        success: false,
+                        error: e.message,
+                        output: this.output.join('\n'),
+                        debug: this.debug
+                    };
+                }
+            }
+
+            reset() {
+                this.variables = {};
+                this.constants = {};
+                this.output = [];
+                this.debug = [];
+                this.isPaused = false;
+                this.inMultilineComment = false;
+            }
+
+            parseProgram() {
+                let i = 0;
+                while (i < this.lines.length && !this.isPaused) {
+                    const line = this.lines[i];
+                    this.debug.push(`[${line.number}] 🔍 Текущая строка: "${line.trimmed}" (индекс ${i})`);
+
+                    // Обработка многострочного комментария \...\
+                    if (this.inMultilineComment) {
+                        if (line.trimmed.endsWith('\\')) {
+                            this.inMultilineComment = false;
+                            this.debug.push(`[${line.number}] 🔒 Закрыт многострочный комментарий`);
+                        }
+                        i++;
+                        continue;
+                    }
+
+                    if (line.trimmed.startsWith('\\') && !line.trimmed.startsWith('\\>') && !line.trimmed.startsWith('\\>>')) {
+                        if (line.trimmed.endsWith('\\')) {
+                            this.debug.push(`[${line.number}] 🔒 Многострочный комментарий (однострочный)`);
+                            i++;
+                            continue;
+                        } else {
+                            this.inMultilineComment = true;
+                            this.debug.push(`[${line.number}] 🔒 Начало многострочного комментария`);
+                            i++;
+                            continue;
+                        }
+                    }
+
+                    if (line.trimmed && !line.trimmed.startsWith('//') && !this.inMultilineComment) {
+                        const newIndex = this.executeLine(i);
+                        this.debug.push(`[${line.number}] ➡️ После выполнения индекс стал ${newIndex}`);
+                        i = newIndex;
+                    } else {
+                        i++;
+                    }
+                }
+            }
+
+            executeLine(index) {
+                const line = this.lines[index];
+                let text = line.trimmed;
+
+                // Пропускаем строки, которые являются только закрывающей скобкой, else, else-if
+                if (text === '}' || text === '!' || text.startsWith('! ') || text.startsWith('!?') || /^\s*}\s*!\s*{\s*$/.test(text)) {
+                    return index + 1;
+                }
+
+                // 0. Объявление функции tool
+                if (text.startsWith('tool')) {
+                    const newIndex = this.parseFunctionDeclaration(index);
+                    // нужно вернуть новый индекс, но executeLine вызывается из цикла,
+                    // поэтому мы должны вернуть индекс, с которого продолжать
+                    return newIndex;
+                }
+
+                // 1. Многострочный вывод Tex>>...<<
+                if (text.startsWith('Tex>>')) {
+                    const newIndex = this.handleMultilineTex(text, index);
+                    return newIndex; // вместо index + 1
+                }
+
+                if (text === '}' || text === '!' || text.startsWith('! ') || text.startsWith('!?')) {
+                    return index + 1;
+                }
+
+                // 2. Tex>
+                if (text.startsWith('Tex>')) {
+                    this.handleTex(text);
+                    return index + 1;
+                }
+
+                // ===== ВВОД =====
+                if (text.startsWith('_>')) {
+                    this.promptText = text.substring(2).replace(/<$/, '').trim();
+                    this.debug.push(`[${line.number}] _> ${this.promptText}`);
+                    return index + 1;
+                }
+                if (text.startsWith('_[')) {
+                    const end = text.indexOf(']');
+                    if (end !== -1) {
+                        this.promptText = text.substring(2, end).trim();
+                        this.debug.push(`[${line.number}] _[ ${this.promptText}`);
+                    }
+                    return index + 1;
+                }
+
+                // 3. Присваивание
+                const assignMatch = text.match(/^(!?)([a-zA-Zа-яА-Я_][a-zA-Zа-яА-Я0-9_]*)\s*=\s*(.+)$/);
+                if (assignMatch) {
+                    this.handleAssignment(assignMatch, line.number);
+                    return index + 1;
+                }
+
+                // 4. Инкремент/декремент
+                const incMatch = text.match(/^([a-zA-Zа-яА-Я_][a-zA-Zа-яА-Я0-9_]*)\s*(\^\^|\.\.)$/);
+                if (incMatch) {
+                    this.handleIncDec(incMatch, line.number);
+                    return index + 1;
+                }
+
+                // 5. Цикл WHILE
+                if (text.startsWith('??')) {
+                    return this.handleWhile(index);
+                }
+
+                // 6. Условие IF
+                if (text.startsWith('?') && text.includes('(')) {
+                    return this.handleIf(index);
+                }
+
+                // 7. ELSE-IF (пропускаем)
+                if (text.startsWith('!?') && text.includes('(')) {
+                    return index + 1;
+                }
+
+                // 8. ELSE (пропускаем)
+                if (text === '!' || text.startsWith('! ')) {
+                    return index + 1;        
+                }
+
+                // 9. Закрывающая скобка
+                if (text === '}') {
+                    return index + 1;
+                }
+
+
+                // 10. Пакеты
+                if (text.startsWith('Pack<')) {
+                    const pack = this.handlePack(text, line.number);
+                    const varName = `__pack_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+                    this.variables[varName] = pack;
+                    this.debug.push(`[${line.number}] Создан пакет: ${pack.toString()}`);
+                    return index + 1;
+                }
+
+
+                // ===== ВСТАВКА ПО ИНДЕКСУ (pack +3> 99) =====
+                const insertMatch = text.match(/^([a-zA-Zа-яА-Я_][a-zA-Zа-яА-Я0-9_]*)\s*\+(\d+)\>\s*(.+)$/);
+                if (insertMatch) {
+                    const [, name, indexStr, valueExpr] = insertMatch;
+                    const idx = parseInt(indexStr);
+                    const pack = this.variables[name] ?? this.constants[name];
+                    if (!(pack instanceof Pack)) {
+                        throw new Error(`[${line.number}] ${name} не является пакетом`);
+                    }
+                    const value = this.evaluateExpression(valueExpr.trim());
+                    if (idx < 1 || idx > pack.items.length + 1) {
+                        throw new Error(`[${line.number}] Индекс ${idx} вне диапазона (длина ${pack.items.length})`);
+                    }
+                    pack.items.splice(idx - 1, 0, value);
+                    this.debug.push(`[${line.number}] ${name} +${idx}> ${value} (вставка по индексу)`);
+                    return index + 1;
+                }
+
+                // 11. Добавление в пакет
+                const packAddMatch = text.match(/^([a-zA-Zа-яА-Я_][a-zA-Zа-яА-Я0-9_]*)\s*\+\>\s*(.+)$/);
+                if (packAddMatch) {
+                    this.handlePackAdd(packAddMatch, line.number);
+                    return index + 1;
+                }
+
+                // ===== УДАЛЕНИЕ ПО ИНДЕКСУ (pack -3>) =====
+                const removeIndexMatch = text.match(/^([a-zA-Zа-яА-Я_][a-zA-Zа-яА-Я0-9_]*)\s*\-(\d+)\>\s*$/);
+                if (removeIndexMatch) {
+                    const [, name, indexStr] = removeIndexMatch;
+                    const idx = parseInt(indexStr);
+                    const pack = this.variables[name] ?? this.constants[name];
+                    if (!(pack instanceof Pack)) {
+                        throw new Error(`[${line.number}] ${name} не является пакетом`);
+                    }
+                    if (idx < 1 || idx > pack.items.length) {
+                        throw new Error(`[${line.number}] Индекс ${idx} вне диапазона (длина ${pack.items.length})`);
+                    }
+                    const removed = pack.removeAt(idx);
+                    this.debug.push(`[${line.number}] ${name} -${idx}> (удален: ${removed})`);
+                    return index + 1;
+                }
+
+                // 12. Удаление из пакета
+                const packRemoveMatch = text.match(/^([a-zA-Zа-яА-Я_][a-zA-Zа-яА-Я0-9_]*)\s*\-\>\s*(.*)$/);
+                if (packRemoveMatch) {
+                    this.handlePackRemove(packRemoveMatch, line.number);
+                    return index + 1;
+                }
+
+                // 13. exit
+                if (text === 'exit') {
+                    this.isPaused = true;
+                    this.debug.push(`[${line.number}] ⏹️ exit - программа завершена`);
+                    return index + 1;
+                }
+
+                // ===== ВЫЗОВ ФУНКЦИИ (с параметрами через точку) =====
+                const callMatch = text.match(/^([a-zA-Zа-яА-Я_][a-zA-Zа-яА-Я0-9_]*)((?:\.[a-zA-Zа-яА-Я0-9_]+)*)\!$/);
+                if (callMatch) {
+                    const funcName = callMatch[1];
+                    const argsStr = callMatch[2]; // например: ".Алексей.25"
+                    const args = argsStr ? argsStr.split('.').filter(s => s) : [];
+                    // Преобразуем аргументы в значения
+                    const argValues = args.map(arg => {
+                        // Если аргумент — число
+                        if (/^-?\d+$/.test(arg)) return parseInt(arg);
+                        if (/^-?\d+\.\d+$/.test(arg)) return parseFloat(arg);
+                        // Если yes/no
+                        if (arg === 'yes') return true;
+                        if (arg === 'no') return false;
+                        // Иначе — строка
+                        return arg;
+                    });
+                    this.callFunction(funcName, argValues, line.number);
+                    return index + 1;
+                }
+
+                // Неизвестная команда
+                if (text && text !== '{' && text !== '}') {
+                    this.debug.push(`[${line.number}] ⚠️ Неизвестная команда: "${text}"`);
+                }
+                return index + 1;
+            }
+
+            // ====== ОБЪЯВЛЕНИЕ ФУНКЦИИ ======
+            parseFunctionDeclaration(index) {
+                const line = this.lines[index];
+                const text = line.trimmed;
+                this.debug.push(`[${line.number}] 🔧 Объявление функции: "${text}"`);
+
+                // Извлекаем имя и параметры из строки tool name.param1.param2 {
+                const match = text.match(/^tool\s+([a-zA-Zа-яА-Я_][a-zA-Zа-яА-Я0-9_\.]*)\s*\{?/);
+                if (!match) {
+                    throw new Error(`[${line.number}] Ошибка синтаксиса функции`);
+                }
+
+                const fullName = match[1]; // например: "greet.name" или "sayHello"
+                const parts = fullName.split('.');
+                const funcName = parts[0];      // "greet" или "sayHello"
+                const params = parts.slice(1);  // ["name"] или []
+
+                const block = this.findBlock(index);
+                if (!block) {
+                    throw new Error(`[${line.number}] Не найдено тело функции`);
+                }
+
+                // Сохраняем функцию с параметрами
+                this.functions[funcName] = {
+                    params: params,
+                    body: block.lines.map(l => l.text)
+                };
+                this.debug.push(`[${line.number}] Функция ${funcName} сохранена (параметры: ${params.join(', ')}, ${block.lines.length} строк)`);
+
+                return block.end + 1;
+            }
+
+
+            // ====== ВЫЗОВ ФУНКЦИИ ======
+            callFunction(name, callArgs, lineNum) {
+                this.debug.push(`[${lineNum}] 📞 Вызов функции: ${name}! (аргументы: ${callArgs.join(', ')})`);
+
+                const func = this.functions[name];
+                if (!func) {
+                    throw new Error(`[${lineNum}] Функция ${name} не определена`);
+                }
+
+                // Проверяем количество параметров
+                if (func.params.length !== callArgs.length) {
+                    throw new Error(`[${lineNum}] Функция ${name} ожидает ${func.params.length} параметров, передано ${callArgs.length}`);
+                }
+
+                // Сохраняем текущие переменные
+                const savedVars = { ...this.variables };
+                const savedConsts = { ...this.constants };
+
+                // Подставляем параметры в переменные
+                for (let i = 0; i < func.params.length; i++) {
+                    const paramName = func.params[i];
+                    const argValue = callArgs[i];
+                    this.variables[paramName] = argValue;
+                    this.debug.push(`[${lineNum}] Параметр ${paramName} = ${argValue}`);
+                }
+
+                // Выполняем тело функции
+                const bodyLines = func.body.map((text, idx) => ({
+                    number: lineNum + idx + 1,
+                    text: text,
+                    trimmed: text.trim()
+                }));
+
+                const oldLines = this.lines;
+                this.lines = bodyLines;
+
+                try {
+                    let i = 0;
+                    while (i < this.lines.length && !this.isPaused) {
+                        const line = this.lines[i];
+                        if (line.trimmed && !line.trimmed.startsWith('//') && !this.inMultilineComment) {
+                            this.executeLine(i);
+                        }
+                        i++;
+                    }
+                } catch (e) {
+                    throw e;
+                } finally {
+                    // Восстанавливаем переменные
+                    this.variables = savedVars;
+                    this.constants = savedConsts;
+                    this.lines = oldLines;
+                }
+
+                this.debug.push(`[${lineNum}] ✅ Функция ${name} выполнена`);
+            }
+
+
+            // Вспомогательный метод для преобразования аргумента в значение
+            evaluateArgument(arg) {
+                // Если это число (целое или с плавающей точкой)
+                if (/^-?\d+$/.test(arg)) return parseInt(arg);
+                if (/^-?\d+\.\d+$/.test(arg)) return parseFloat(arg);
+                if (/^-?\d+'\d+$/.test(arg)) {
+                    // Синтаксис 3'14 -> 3.14
+                    const [whole, frac] = arg.split("'");
+                    return parseFloat(whole + '.' + frac);
+                }
+                if (arg === 'yes') return true;
+                if (arg === 'no') return false;
+                // Если это строка (всё остальное)
+                return arg;
+            }
+
+            findMatchingBrace(openLineIndex) {
+                // Начиная со строки openLineIndex, ищем строку с '{'
+                let i = openLineIndex;
+                let braceCount = 0;
+                let started = false;
+                while (i < this.lines.length) {
+                    const trimmed = this.lines[i].trimmed;
+                    let open = (trimmed.match(/\{/g) || []).length;
+                    let close = (trimmed.match(/\}/g) || []).length;
+                    braceCount += open - close;
+                    // Если строка содержит '{', мы начинаем отсчёт, даже если в ней есть и '}'
+                    if (open > 0 && !started) {
+                        started = true;
+                    }
+                    if (started && braceCount === 0) {
+                        return i; // индекс строки, где баланс стал 0 (закрывающая скобка)
+                    }
+                    i++;
+                }
+                return -1; // не найдено
+            }
+
+            // ====== НОВЫЙ: МНОГОСТРОЧНЫЙ ВЫВОД ======
+            handleMultilineTex(text, index) {
+                let content = text.substring(5).trim();
+                let endIndex = content.indexOf('<<');
+                let fullContent = '';
+                let lastLine = index; // индекс последней обработанной строки
+
+                if (endIndex !== -1) {
+                    fullContent = content.substring(0, endIndex);
+                    lastLine = index;
+                } else {
+                    fullContent = content;
+                    let i = index + 1;
+                    let found = false;
+                    while (i < this.lines.length) {
+                        const line = this.lines[i];
+                        const trimmed = line.trimmed;
+                        const closeIndex = trimmed.indexOf('<<');
+                        if (closeIndex !== -1) {
+                            fullContent += '\n' + trimmed.substring(0, closeIndex);
+                            lastLine = i;
+                            found = true;
+                            break;
+                        }
+                        fullContent += '\n' + trimmed;
+                        i++;
+                    }
+                    if (!found) {
+                        this.debug.push(`[${this.lines[index].number}] ⚠️ Не найден закрывающий << для Tex>>`);
+                        lastLine = i - 1; // дошли до конца
+                    }
+                }
+
+                fullContent = this.processEscapes(fullContent);
+                fullContent = this.processVariables(fullContent);
+
+                this.output.push(fullContent);
+                this.debug.push(`📤 Tex>> ${fullContent.substring(0, 60)}${fullContent.length > 60 ? '...' : ''}`);
+
+                // Возвращаем индекс следующей строки после последней использованной
+                return lastLine + 1;
+            }
+
+            // ====== НОВЫЙ: ОБРАБОТКА ЭКРАНИРОВАНИЯ ======
+            processEscapes(text) {
+                // Заменяем \>> на 4 пробела (или сколько нужно)
+                let result = text.replace(/\\>>/g, '    '); // четыре пробела
+                result = result.replace(/\\>/g, '\n');
+                return result;
+            }
+
+            // ====== НОВЫЙ: ОБРАБОТКА ПЕРЕМЕННЫХ ======
+            processVariables(text) {
+                // @переменная[индекс]
+                text = text.replace(/@([a-zA-Zа-яА-Я0-9_]+)\[(\d+)\]/g, (m, name, idx) => {
+                    const pack = this.variables[name] ?? this.constants[name];
+                    if (pack instanceof Pack) {
+                        const val = pack.get(parseInt(idx));
+                        return val !== undefined ? val : `[${idx}]`;
+                    }
+                    return m;
+                });
+
+                // @переменная.size
+                text = text.replace(/@([a-zA-Zа-яА-Я0-9_]+)\.size/g, (m, name) => {
+                    const pack = this.variables[name] ?? this.constants[name];
+                    if (pack instanceof Pack) return pack.length;
+                    return m;
+                });
+
+                // @переменная
+                text = text.replace(/@([a-zA-Zа-яА-Я0-9_]+)/g, (m, name) => {
+                    const val = this.variables[name] ?? this.constants[name];
+                    if (val === undefined) return m;
+                    if (val instanceof Pack) return val.toString();
+                    if (typeof val === 'boolean') return val ? 'yes' : 'no';
+                    return val;
+                });
+
+                return text;
+            }
+
+            handleTex(text) {
+                let content = text.substring(4).trim();
+                // Убираем закрывающий < в конце
+                if (content.endsWith('<')) {
+                    content = content.slice(0, -1);
+                }
+                
+                // Обработка экранирования
+                content = this.processEscapes(content);
+                
+                // Подстановка переменных
+                content = this.processVariables(content);
+                
+                this.output.push(content);
+                this.debug.push(`📤 Tex> ${content.substring(0, 60)}${content.length > 60 ? '...' : ''}`);
+            }
+
+
+            handleIf(index) {
+                const line = this.lines[index];
+                const text = line.trimmed;
+                this.debug.push(`[${line.number}] 🔍 ВХОД В handleIf: "${text}"`);
+
+                const match = text.match(/^\?\s*\(\s*(.+?)\s*\)\s*\{?/);
+                if (!match) {
+                    throw new Error(`[${line.number}] Ошибка синтаксиса условия`);
+                }
+                const condition = match[1].trim();
+                const result = this.evaluateCondition(condition);
+                this.debug.push(`[${line.number}] ? (${condition}) = ${result}`);
+
+                const ifBlock = this.findBlock(index);
+                if (!ifBlock) {
+                    throw new Error(`[${line.number}] Не найдено тело условия`);
+                }
+                this.debug.push(`[${line.number}] Блок if найден: строки ${ifBlock.start}-${ifBlock.end}`);
+                this.debug.push(`[${line.number}] Содержимое блока if: ${ifBlock.lines.map(l => l.trimmed).join(', ')}`);
+
+                let executed = false;
+                if (result) {
+                    this.debug.push(`[${line.number}] ✅ Выполняем блок if`);
+                    this.executeBlock(ifBlock);
+                    executed = true;
+                } else {
+                    this.debug.push(`[${line.number}] ⏭️ Пропускаем блок if`);
+                }
+
+                let idx = ifBlock.end + 1; // следующая строка после блока (не включая закрывающую })
+                this.debug.push(`[${line.number}] Начинаем обработку после if с индекса ${idx}`);
+
+                while (idx < this.lines.length) {
+                    const curLine = this.lines[idx];
+                    const trimmed = curLine.trimmed;
+                    this.debug.push(`[${curLine.number}] Проверяем строку после if: "${trimmed}"`);
+
+                    // Если строка начинается с } и содержит !, это закрытие if и начало else/else-if
+                    if (trimmed.startsWith('}') && trimmed.includes('!')) {
+                        this.debug.push(`[${curLine.number}] Найдена комбинация } ! {`);
+                        // Находим блок для else/else-if (он начинается с { на этой же строке)
+                        const elseBlock = this.findBlock(idx);
+                        if (elseBlock && !executed) {
+                            this.debug.push(`[${curLine.number}] ✅ Выполняем else блок`);
+                            this.executeBlock(elseBlock);
+                            executed = true;
+                        } else if (elseBlock && executed) {
+                            this.debug.push(`[${curLine.number}] ⏭️ Пропускаем else блок (уже выполнен)`);
+                        }
+                        if (elseBlock) {
+                            idx = elseBlock.end + 1;
+                            continue;
+                        }
+                        // Если не удалось найти блок, просто пропускаем строку
+                        idx++;
+                        continue;
+                    }
+
+                    // Если строка является закрывающей скобкой } (без !)
+                    if (trimmed === '}') {
+                        this.debug.push(`[${curLine.number}] Закрывающая скобка, выходим`);
+                        return idx + 1;
+                    }
+
+                    // Если встретили else-if (без предшествующей } на той же строке)
+                    if (trimmed.startsWith('!?') && trimmed.includes('(')) {
+                        if (!executed) {
+                            const elseIfMatch = trimmed.match(/^!\?\s*\(\s*(.+?)\s*\)\s*\{?/);
+                            if (elseIfMatch) {
+                                const cond = elseIfMatch[1].trim();
+                                const res = this.evaluateCondition(cond);
+                                this.debug.push(`[${curLine.number}] !? (${cond}) = ${res}`);
+                                const elseBlock = this.findBlock(idx);
+                                if (elseBlock) {
+                                    if (res) {
+                                        this.debug.push(`[${curLine.number}] ✅ Выполняем else-if блок`);
+                                        this.executeBlock(elseBlock);
+                                        executed = true;
+                                    } else {
+                                        this.debug.push(`[${curLine.number}] ⏭️ Пропускаем else-if блок`);
+                                    }
+                                    idx = elseBlock.end + 1;
+                                    continue;
+                                }
+                            }
+                        } else {
+                            const elseBlock = this.findBlock(idx);
+                            if (elseBlock) {
+                                idx = elseBlock.end + 1;
+                                continue;
+                            }
+                        }
+                        idx++;
+                        continue;
+                    }
+
+                    // Если встретили else (без предшествующей } на той же строке)
+                    if (trimmed === '!' || trimmed.startsWith('! ')) {
+                        if (!executed) {
+                            const elseBlock = this.findBlock(idx);
+                            if (elseBlock) {
+                                this.debug.push(`[${curLine.number}] ✅ Выполняем else блок`);
+                                this.executeBlock(elseBlock);
+                                executed = true;
+                                idx = elseBlock.end + 1;
+                                continue;
+                            }
+                        } else {
+                            const elseBlock = this.findBlock(idx);
+                            if (elseBlock) {
+                                idx = elseBlock.end + 1;
+                                continue;
+                            }
+                        }
+                        idx++;
+                        continue;
+                    }
+
+                    // Иначе пропускаем строку
+                    idx++;
+                }
+
+                return idx;
+            }
+
+
+            handleWhile(index) {
+                const line = this.lines[index];
+                const text = line.trimmed;
+                this.debug.push(`[${line.number}] 🔍 ВХОД В handleWhile: "${text}"`);
+
+                // Извлекаем содержимое скобок
+                const match = text.match(/^\?\?\s*\(\s*(.+?)\s*\)\s*\{?/);
+                if (!match) {
+                    // Бесконечный цикл
+                    this.debug.push(`[${line.number}] 🔄 Бесконечный цикл`);
+                    return this.handleInfiniteLoop(index);
+                }
+
+                const inside = match[1].trim();
+                this.debug.push(`[${line.number}] Содержимое скобок: "${inside}"`);
+
+                // Определяем тип
+                if (inside.includes(':')) {
+                    this.debug.push(`[${line.number}] Это forEach`);
+                    return this.handleForEach(index);
+                } else if (inside.includes(',')) {
+                    this.debug.push(`[${line.number}] Это for`);
+                    return this.handleFor(index);
+                } else {
+                    this.debug.push(`[${line.number}] Это while`);
+                    return this.handleWhileLoop(index);
+                }
+            }
+
+            //ктуушцм
+            // ====== БЕСКОНЕЧНЫЙ ЦИКЛ ======
+            handleInfiniteLoop(index) {
+                const block = this.findBlock(index);
+                if (!block) return index + 1;
+                let iter = 0;
+                while (iter < this.maxIterations && !this.isPaused) {
+                    this.debug.push(`[${this.lines[index].number}] Бесконечный цикл, итерация ${iter+1}`);
+                    this.executeBlock(block);
+                    iter++;
+                }
+                let i = block.end + 1;
+                while (i < this.lines.length && this.lines[i].trimmed !== '}') i++;
+                return i + 1;
+            }
+
+            // ====== ОБЫЧНЫЙ WHILE ======
+            handleWhileLoop(index) {
+                const line = this.lines[index];
+                const text = line.trimmed;
+                const match = text.match(/^\?\?\s*\(\s*(.+?)\s*\)\s*\{?/);
+                if (!match) return index + 1;
+                const condition = match[1].trim();
+                const block = this.findBlock(index);
+                if (!block) return index + 1;
+
+                let iter = 0;
+                while (iter < this.maxIterations && !this.isPaused) {
+                    const result = this.evaluateCondition(condition);
+                    if (!result) break;
+                    this.debug.push(`[${line.number}] while итерация ${iter+1}: условие = ${result}`);
+                    this.executeBlock(block);
+                    iter++;
+                }
+                let i = block.end + 1;
+                while (i < this.lines.length && this.lines[i].trimmed !== '}') i++;
+                return i + 1;
+            }
+
+            // ====== FOR ======
+            handleFor(index) {
+                const line = this.lines[index];
+                const text = line.trimmed;
+                const match = text.match(/^\?\?\s*\(\s*(.+?)\s*\)\s*\{?/);
+                if (!match) throw new Error(`[${line.number}] Ошибка синтаксиса for`);
+                const parts = match[1].split(',').map(s => s.trim());
+                if (parts.length < 2 || parts.length > 3) {
+                    throw new Error(`[${line.number}] Ожидается init, condition [, step]`);
+                }
+                const init = parts[0];
+                const condition = parts[1];
+                const step = parts[2] || null;
+
+                const block = this.findBlock(index);
+                if (!block) throw new Error(`[${line.number}] Не найден блок for`);
+
+                this.executeLineInContext(init);
+
+                let iter = 0;
+                while (iter < this.maxIterations && !this.isPaused) {
+                    const condResult = this.evaluateCondition(condition);
+                    if (!condResult) break;
+                    this.debug.push(`[${line.number}] for итерация ${iter+1}: условие = ${condResult}`);
+                    this.executeBlock(block);
+                    if (step) {
+                        this.executeLineInContext(step);
+                    }
+                    iter++;
+                }
+                let i = block.end + 1;
+                while (i < this.lines.length && this.lines[i].trimmed !== '}') i++;
+                return i + 1;
+            }
+
+            // ====== FOREACH ======
+            handleForEach(index) {
+                const line = this.lines[index];
+                const text = line.trimmed;
+                const match = text.match(/^\?\?\s*\(\s*(.+?)\s*:\s*(.+?)\s*\)\s*\{?/);
+                if (!match) throw new Error(`[${line.number}] Ошибка синтаксиса forEach`);
+                const itemVar = match[1].trim();
+                const packExpr = match[2].trim();
+                const packName = packExpr.replace(/^@/, '');
+                const block = this.findBlock(index);
+                if (!block) throw new Error(`[${line.number}] Не найден блок forEach`);
+
+                const pack = this.variables[packName] ?? this.constants[packName];
+                if (!(pack instanceof Pack)) {
+                    throw new Error(`[${line.number}] ${packName} не является пакетом`);
+                }
+
+                for (let i = 0; i < pack.items.length && !this.isPaused; i++) {
+                    this.variables[itemVar] = pack.items[i];
+                    this.debug.push(`[${line.number}] forEach: ${itemVar} = ${pack.items[i]}`);
+                    this.executeBlock(block);
+                }
+                let j = block.end + 1;
+                while (j < this.lines.length && this.lines[j].trimmed !== '}') j++;
+                return j + 1;
+            }
+
+            // ====== ВСПОМОГАТЕЛЬНЫЙ МЕТОД ДЛЯ INIT/STEP ======
+            executeLineInContext(lineText) {
+                const trimmed = lineText.trim();
+                if (trimmed.includes('=')) {
+                    const parts = trimmed.split('=');
+                    if (parts.length === 2) {
+                        const varName = parts[0].trim();
+                        const valueExpr = parts[1].trim();
+                        const val = this.evaluateExpression(valueExpr);
+                        if (this.constants[varName] !== undefined) {
+                            throw new Error(`Нельзя изменить константу: ${varName}`);
+                        }
+                        this.variables[varName] = val;
+                        this.debug.push(`(init/step) ${varName} = ${val}`);
+                        return;
+                    }
+                }
+                const incMatch = trimmed.match(/^(.+?)\s*(\^\^|\.\.)$/);
+                if (incMatch) {
+                    const varName = incMatch[1].trim();
+                    const op = incMatch[2];
+                    const val = this.variables[varName] ?? this.constants[varName];
+                    if (typeof val !== 'number') throw new Error(`${varName} не число`);
+                    if (this.constants[varName] !== undefined) throw new Error(`Нельзя изменить константу: ${varName}`);
+                    const newVal = op === '^^' ? val + 1 : val - 1;
+                    this.variables[varName] = newVal;
+                    this.debug.push(`(init/step) ${varName}${op} = ${newVal}`);
+                    return;
+                }
+            }
+
+            // ====== ПОИСК БЛОКА ======
+
+            findBlock(conditionIndex) {
+                const line = this.lines[conditionIndex];
+                this.debug.push(`[${line.number}] 🔍 findBlock для строки: "${line.trimmed}"`);
+
+                // Ищем строку с первой { (открывающая)
+                let openLine = -1;
+                for (let i = conditionIndex; i < this.lines.length; i++) {
+                    if (this.lines[i].trimmed.includes('{')) {
+                        openLine = i;
+                        break;
+                    }
+                }
+                if (openLine === -1) {
+                    this.debug.push(`[${line.number}] Не найдена открывающая скобка {`);
+                    return null;
+                }
+
+                let braceCount = 0;
+                let lines = [];
+                let endLine = -1;
+
+                // Обрабатываем строки, начиная с openLine
+                for (let i = openLine; i < this.lines.length; i++) {
+                    const text = this.lines[i].text;
+                    // Проходим по символам строки
+                    for (let ch of text) {
+                        if (ch === '{') braceCount++;
+                        else if (ch === '}') {
+                            braceCount--;
+                            if (braceCount === 0) {
+                                // Нашли закрывающую скобку, запоминаем индекс строки
+                                endLine = i;
+                                // Выходим из цикла по символам
+                                break;
+                            }
+                        }
+                    }
+                    if (endLine !== -1) break;
+
+                    // Если мы ещё не нашли закрывающую и это не openLine, добавляем строку в тело
+                    if (i > openLine) {
+                        lines.push(this.lines[i]);
+                    }
+                }
+
+                if (endLine === -1) {
+                    this.debug.push(`[${line.number}] Не найдена закрывающая скобка }`);
+                    return null;
+                }
+
+                this.debug.push(`[${line.number}] Блок найден: строки ${openLine+1}..${endLine-1}`);
+                this.debug.push(`[${line.number}] Тело блока (${lines.length} строк)`);
+
+                return {
+                    start: openLine + 1,
+                    end: endLine,
+                    lines: lines
+                };
+            }
+
+            executeBlock(block) {
+                this.debug.push(`▶️ Выполнение блока со строками ${block.start}-${block.end}`);
+                for (const line of block.lines) {
+                    const trimmed = line.trimmed;
+                    if (trimmed && !trimmed.startsWith('//') && trimmed !== '{' && trimmed !== '}') {
+                        this.debug.push(`[${line.number}] Исполняем строку внутри блока: "${trimmed}"`);
+                        const idx = this.lines.indexOf(line);
+                        if (idx !== -1) {
+                            this.executeLine(idx);
+                        }
+                    }
+                }
+                this.debug.push(`✅ Блок выполнен`);
+            }
+
+            // ====== ПРИСВАИВАНИЕ ======
+            handleAssignment(match, lineNum) {
+                const [, isConst, name, valueExpr] = match;
+                let value = this.evaluateExpression(valueExpr.trim());
+                
+                // Обработка yes/no
+                if (value === 'yes') value = true;
+                if (value === 'no') value = false;
+                
+                if (isConst) {
+                    this.constants[name] = value;
+                    this.debug.push(`[${lineNum}] !${name} = ${value} (константа)`);
+                } else {
+                    if (this.constants[name] !== undefined) {
+                        throw new Error(`[${lineNum}] Нельзя изменить константу: ${name}`);
+                    }
+                    this.variables[name] = value;
+                    this.debug.push(`[${lineNum}] ${name} = ${value}`);
+                }
+            }
+
+            handleIncDec(match, lineNum) {
+                const [, name, op] = match;
+                const val = this.variables[name] ?? this.constants[name];
+                if (typeof val !== 'number') {
+                    throw new Error(`[${lineNum}] ${name} не число, нельзя применить ${op}`);
+                }
+                if (this.constants[name] !== undefined) {
+                    throw new Error(`[${lineNum}] ${name} константа, нельзя изменить`);
+                }
+                const newVal = op === '^^' ? val + 1 : val - 1;
+                this.variables[name] = newVal;
+                this.debug.push(`[${lineNum}] ${name}${op} = ${newVal}`);
+            }
+
+            // ====== ВЫЧИСЛЕНИЯ ======
+            evaluateExpression(expr) {
+                expr = expr.trim();
+                if ((expr.startsWith('"') && expr.endsWith('"')) || (expr.startsWith("'") && expr.endsWith("'"))) {
+                    return expr.slice(1, -1);
+                }
+                if (/^-?\d+$/.test(expr)) return parseInt(expr);
+                if (/^-?\d+\.\d+$/.test(expr)) return parseFloat(expr);
+                if (expr === 'yes') return true;
+                if (expr === 'no') return false;
+                if (expr === '_') {
+                    const input = prompt(this.promptText || 'Введите значение:');
+                    return input !== null ? input : '';
+                }
+                if (/^[a-zA-Zа-яА-Я_][a-zA-Zа-яА-Я0-9_]*$/.test(expr)) {
+                    const val = this.variables[expr] ?? this.constants[expr];
+                    if (val === undefined) throw new Error(`Переменная ${expr} не определена`);
+                    return val;
+                }
+                // Поддержка Pack<...>
+                if (expr.startsWith('Pack<') && expr.endsWith('>')) {
+                    return this.handlePack(expr, 0);
+                }
+                return this.evaluateMath(expr);
+            }
+
+            evaluateMath(expr) {
+                expr = expr.replace(/[a-zA-Zа-яА-Я_][a-zA-Zа-яА-Я0-9_]*/g, (m) => {
+                    const val = this.variables[m] ?? this.constants[m];
+                    if (val === undefined) return m;
+                    if (typeof val === 'number') return val;
+                    if (typeof val === 'boolean') return val ? 'true' : 'false';
+                    return m;
+                });
+                expr = expr.replace(/\s/g, '');
+                try {
+                    if (/^[0-9+\-*/%().]+$/.test(expr)) {
+                        return Function('"use strict"; return (' + expr + ')')();
+                    }
+                    return expr;
+                } catch (e) {
+                    this.debug.push(`⚠️ Ошибка вычисления: ${expr}`);
+                    return expr;
+                }
+            }
+
+            evaluateCondition(condition) {
+                condition = condition.trim();
+                condition = condition.replace(/@?([a-zA-Zа-яА-Я_][a-zA-Zа-яА-Я0-9_]*)/g, (m, name) => {
+                    const val = this.variables[name] ?? this.constants[name];
+                    if (val === undefined) return m;
+                    if (typeof val === 'string') return `"${val}"`;
+                    if (typeof val === 'boolean') return val ? 'true' : 'false';
+                    return val;
+                });
+                condition = condition
+                    .replace(/>=/g, '>=')
+                    .replace(/<=/g, '<=')
+                    .replace(/==/g, '==')
+                    .replace(/#=/g, '!==')
+                    .replace(/!=/g, '!==')
+                    .replace(/></g, '&&')
+                    .replace(/<>>/g, '||')
+                    .replace(/#([a-zA-Zа-яА-Я_][a-zA-Zа-яА-Я0-9_]*)/g, '!$1')
+                    .replace(/#\(/g, '!(');
+                condition = condition.replace(/\byes\b/g, 'true');
+                condition = condition.replace(/\bno\b/g, 'false');
+                try {
+                    return Function('"use strict"; return !!( ' + condition + ' )')();
+                } catch (e) {
+                    this.debug.push(`⚠️ Ошибка в условии: ${condition}`);
+                    return false;
+                }
+            }
+
+            // ====== ПАКЕТЫ ======
+            handlePack(text, lineNum) {
+                const items = [];
+                let currentItem = '';
+                let inString = false;
+                let quoteChar = '';
+                const content = text.substring(5, text.length - 1);
+                for (let i = 0; i < content.length; i++) {
+                    const ch = content[i];
+                    if (ch === '"' || ch === "'") {
+                        if (!inString) { inString = true; quoteChar = ch; currentItem += ch; }
+                        else if (ch === quoteChar) { inString = false; currentItem += ch; }
+                        else currentItem += ch;
+                        continue;
+                    }
+                    if (ch === ',' && !inString) {
+                        if (currentItem.trim()) items.push(this.parseValue(currentItem.trim()));
+                        currentItem = '';
+                        continue;
+                    }
+                    currentItem += ch;
+                }
+                if (currentItem.trim()) items.push(this.parseValue(currentItem.trim()));
+                // ВАЖНО: возвращаем НОВЫЙ экземпляр Pack
+                return new Pack(items);
+            }
+
+            parseValue(value) {
+                if (/^-?\d+$/.test(value)) return parseInt(value);
+                if (/^-?\d+\.\d+$/.test(value)) return parseFloat(value);
+                if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+                    return value.slice(1, -1);
+                }
+                if (value === 'yes') return true;
+                if (value === 'no') return false;
+                return value;
+            }
+
+            handlePackAdd(match, lineNum) {
+                const [, name, valueExpr] = match;
+                const pack = this.variables[name] ?? this.constants[name];
+                if (!(pack instanceof Pack)) throw new Error(`[${lineNum}] ${name} не является пакетом`);
+                const value = this.evaluateExpression(valueExpr.trim());
+                pack.add(value);
+                this.debug.push(`[${lineNum}] ${name} +> ${value}`);
+            }
+
+            handlePackRemove(match, lineNum) {
+                const [, name, valueExpr] = match;
+                const pack = this.variables[name] ?? this.constants[name];
+                if (!(pack instanceof Pack)) throw new Error(`[${lineNum}] ${name} не является пакетом`);
+
+                // Если после -> ничего нет — удаляем первый элемент
+                if (!valueExpr.trim()) {
+                    const removed = pack.removeFirst();
+                    this.debug.push(`[${lineNum}] ${name} -> (удален первый: ${removed})`);
+                    return;
+                }
+
+                // Иначе удаляем по значению
+                const value = this.evaluateExpression(valueExpr.trim());
+                const idx = pack.items.indexOf(value);
+                if (idx !== -1) {
+                    const removed = pack.items.splice(idx, 1)[0];
+                    this.debug.push(`[${lineNum}] ${name} -> ${value} (удален: ${removed})`);
+                } else {
+                    this.debug.push(`[${lineNum}] ${name} -> ${value} (не найдено)`);
+                }
+            }
+        }
+
+        // ========================================
+        // UI
+        // ========================================
+        const codeEditor = document.getElementById('code-editor');
+        const outputDiv = document.getElementById('output');
+        const debugDiv = document.getElementById('debug');
+        const statusDiv = document.getElementById('status');
+
+        const interpreter = new SimpleTexInterpreter();
+
+        function runCode() {
+            const code = codeEditor.value;
+            outputDiv.innerHTML = '';
+            debugDiv.innerHTML = '';
+
+            try {
+                const result = interpreter.run(code);
+                if (result.output) outputDiv.textContent = result.output;
+                else outputDiv.textContent = '(пустой вывод)';
+
+                if (result.debug && result.debug.length > 0) {
+                    debugDiv.innerHTML = result.debug.map(line => {
+                        let cls = 'debug-line';
+                        if (line.includes('❌')) cls += ' error';
+                        if (line.includes('✅')) cls += ' success';
+                        if (line.includes('⚠️')) cls += ' warning';
+                        if (line.includes('🔄') || line.includes('📤') || line.includes('🔒')) cls += ' info';
+                        return `<div class="${cls}">${line}</div>`;
+                    }).join('');
+                } else {
+                    debugDiv.textContent = '🔍 Отладка: нет сообщений';
+                }
+
+                if (result.success) {
+                    statusDiv.textContent = '✅ Успешно выполнено!';
+                    statusDiv.style.color = '#4caf50';
+                } else {
+                    statusDiv.textContent = '❌ Ошибка: ' + result.error;
+                    statusDiv.style.color = '#f38ba8';
+                    debugDiv.innerHTML += `<div class="debug-line error">❌ ${result.error}</div>`;
+                }
+            } catch (e) {
+                outputDiv.textContent = 'Ошибка выполнения';
+                debugDiv.innerHTML = `<div class="debug-line error">❌ ${e.message}</div>`;
+                statusDiv.textContent = '❌ Ошибка: ' + e.message;
+                statusDiv.style.color = '#f38ba8';
+            }
+        }
+
+        function clearAll() {
+            if (confirm('Очистить всё?')) {
+                codeEditor.value = '';
+                outputDiv.textContent = '=== Очищено ===';
+                debugDiv.textContent = '🔍 Очищено';
+                statusDiv.textContent = '🗑️ Всё очищено';
+                statusDiv.style.color = '#88aacc';
+            }
+        }
+
+        // ========================================
+        // СОХРАНЕНИЕ И ЗАГРУЗКА .tb^^ ФАЙЛОВ
+        // ========================================
+
+        // ---- СОХРАНЕНИЕ ----
+        document.getElementById('saveBtn').addEventListener('click', function() {
+            const code = document.getElementById('code-editor').value;
+            if (!code.trim()) {
+                alert('⚠️ Нет кода для сохранения!');
+                return;
+            }
+
+            // Создаём файл
+            const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+
+            // Имя файла с датой
+            const date = new Date();
+            const dateStr = date.toISOString().slice(0, 10);
+            a.download = `texbody_${dateStr}.tb^^`;
+
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // Статус
+            document.getElementById('status').textContent = `💾 Сохранено: ${a.download}`;
+            document.getElementById('status').style.color = '#4caf50';
+        });
+
+        // ---- ЗАГРУЗКА ----
+        document.getElementById('loadBtn').addEventListener('click', function() {
+            // Создаём скрытый input для выбора файла
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.tb^^,.txt';
+            input.style.display = 'none';
+
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    document.getElementById('code-editor').value = content;
+                    document.getElementById('status').textContent = `📂 Загружено: ${file.name}`;
+                    document.getElementById('status').style.color = '#4caf50';
+
+                    // Автоматически запускаем код
+                    setTimeout(runCode, 300);
+                };
+                reader.readAsText(file);
+                document.body.removeChild(input);
+            };
+
+            document.body.appendChild(input);
+            input.click();
+        });
+
+
+        // Примеры
+        const examples = {
+            '1': `// Базовый пример с новыми фичами
+name = "Мир"
+age = 25
+!PI = 3.14
+
+flag = yes
+Tex>flag = @flag
+
+Tex>Привет, @name!\>Тебе @age лет\>\>PI = @!PI`,
+
+            '2': `// Тест новых фич
+// 1. yes/no
+flag = yes
+Tex>flag = @flag
+
+// 2. Экранирование
+Tex>Строка1\>Строка2\>\>С табуляцией<
+
+// 3. Многострочный вывод
+Tex>>Это многострочный
+вывод с переносами
+и \> ещё один перенос
+и \>> табуляция<<
+
+// 4. Многострочный комментарий
+\\это многострочный
+комментарий
+который игнорируется\\
+
+// 5. Условия с yes/no
+? (flag == yes) {
+    Tex>✅ flag = yes
+} ! {
+    Tex>flag = no
+}`,
+
+            '3': `// Многострочный вывод и комментарии
+Tex>>=== ЗАГОЛОВОК ===
+Строка 1
+Строка 2
+Строка 3
+=== КОНЕЦ ===<<
+
+\\это многострочный
+комментарий
+который полностью игнорируется
+при выполнении\\
+
+name = "Тест"
+Tex>Привет, @name!\>Это перенос\>\>Это табуляция<`
+        };
+
+        let examplesVisible = false;
+        document.getElementById('examplesBtn').addEventListener('click', () => {
+            examplesVisible = !examplesVisible;
+            document.getElementById('examplesContainer').style.display = examplesVisible ? 'flex' : 'none';
+        });
+
+        document.querySelectorAll('[data-example]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const key = btn.dataset.example;
+                if (examples[key]) {
+                    codeEditor.value = examples[key];
+                    examplesVisible = false;
+                    document.getElementById('examplesContainer').style.display = 'none';
+                    runCode();
+                }
+            });
+        });
+
+        // Тема
+        let darkTheme = true;
+        document.getElementById('themeBtn').addEventListener('click', () => {
+            darkTheme = !darkTheme;
+            document.body.classList.toggle('light', !darkTheme);
+            document.getElementById('themeBtn').textContent = darkTheme ? '🌓 Тема' : '🌑 Тема';
+        });
+
+        // Кнопки
+        document.getElementById('runBtn').addEventListener('click', runCode);
+        document.getElementById('clearBtn').addEventListener('click', clearAll);
+
+        codeEditor.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                runCode();
+            }
+        });
+
+        // Старт
+        runCode();
+    </script>
+</body>
+</html>
