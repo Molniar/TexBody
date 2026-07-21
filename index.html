@@ -275,7 +275,7 @@
     </style>
 </head>
 <body>
-    <h1>TexBody^^ — новая версия</h1>
+    <h1>TexBody^^<br>(v. 1.0)</h1>
     <div class="subtitle">
         <span>Tex>вывод<</span>
         <span>_>ввод<</span>
@@ -319,20 +319,23 @@
                     <button data-example="3">Многострочный</button>
                 </div>
             </label>
-            <textarea id="code-editor" spellcheck="false">// 🌟 Тест новых фич TexBody^^
+            <textarea id="code-editor" spellcheck="false">!name = "TexBody^^"
+Tex>Привет из @name<
+                
+//Примеры кода для TexBody
 
 // 1. yes / no (true/false)
 flag = yes
 Tex>flag = @flag
 
-// 2. Экранирование \> (перенос) и \>> (табуляция)
+// 2. Экранирование \> (перенос на новую строку) и \>> (табуляция)
 Tex>Строка1\>Строка2\>>С табуляцией<
 
 // 3. Многострочный вывод Tex>>...<<
 Tex>>Это многострочный
 вывод с переносами
-и \> ещё один перенос
-и \>> табуляция<<
+и\>ещё один перенос
+и\>>табуляция<<
 
 // 4. Многострочный комментарий \...\
 \это многострочный
@@ -837,7 +840,6 @@ Tex>=== Готово! ===</textarea>
 
             // ====== НОВЫЙ: ОБРАБОТКА ЭКРАНИРОВАНИЯ ======
             processEscapes(text) {
-                // Заменяем \>> на 4 пробела (или сколько нужно)
                 let result = text.replace(/\\>>/g, '    '); // четыре пробела
                 result = result.replace(/\\>/g, '\n');
                 return result;
@@ -1046,8 +1048,7 @@ Tex>=== Готово! ===</textarea>
                     return this.handleWhileLoop(index);
                 }
             }
-
-            //ктуушцм
+            
             // ====== БЕСКОНЕЧНЫЙ ЦИКЛ ======
             handleInfiniteLoop(index) {
                 const block = this.findBlock(index);
